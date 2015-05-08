@@ -1,0 +1,16 @@
+@(message: String)(implicit flash: Flash = Flash())
+
+@main("Index page") {
+  <div class="jumbotron">
+    <div class="container">
+      <h1>@message</h1>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <h2>List validation sample</h2>
+    <ul class="nav nav-pills nav-stacked">
+      <li class="active"><a href="@routes.Users.index">User</a></li>
+    </ul>
+  </div>
+}

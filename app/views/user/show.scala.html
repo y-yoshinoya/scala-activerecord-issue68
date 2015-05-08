@@ -1,0 +1,32 @@
+@(user: models.User)(implicit lang: Lang)
+
+@main("User info") {
+  <ul class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="@routes.Users.index">User</a></li>
+    <li class="active">@user.login</li>
+  </ul>
+
+  <div class="page-header">
+    <h1>User</h1>
+  </div>
+  <div class="col-lg-8">
+    <dl class="dl-horizontal">
+      <dt>@Messages("activerecord.models.User.login")</dt>
+      <dd>@user.login</dd>
+      @user.profilesFromJson.zipWithIndex.map { case (profile, index) =>
+        <dt>@Messages("activerecord.models.User.profiles")[@index]</dt>
+        <dd>
+          <dt>Email</dt><dd>@profile.email</dd>
+          <dt>Phone</dt><dd>@profile.phone</dd>
+        </dd>
+      }
+    </dl>
+
+    <div class="well">
+      <a href="@routes.Users.index" class="btn btn-default">Back</a>
+      <a href="@routes.Users.edit(user.id)" class="btn btn-default">Edit</a>
+      <a href="#" data-redirect="@routes.Users.index" data-target="@routes.Users.delete(user.id)" class="btn btn-danger">Delete</a>
+    </div>
+  </div>
+}

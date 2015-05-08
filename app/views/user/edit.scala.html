@@ -1,0 +1,76 @@
+@(user: Form[models.User], action: Call, buttonLabel: String, title: String)(implicit lang: Lang)
+
+@import models.User.helper._
+
+@profile(field: Field) = {
+  <div class="block">
+    <h4 class="title" style="margin:20px; padding-left: 50px;">@field.name.capitalize</h4>
+    <button type="button" class="close" aria-hidden="true">&times;</button>
+    @inputText(field("[email]"), 'label -> "Email", 'placeholder -> "foo.bar@example.com")
+    @inputText(field("[phone]"), 'label -> "Phone", 'placeholder -> "987654321")
+  </div>
+}
+
+@main(title) {
+  <div id="profile-template" style="display:none">
+    @profile(user("profiles[]"))
+  </div>
+
+  <ul class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="@routes.Users.index">User</a></li>
+    <li class="active">
+      @(if (action == routes.Users.create) "New user" else user.value.map(_.login).getOrElse(user.data("login")))
+    </li>
+  </ul>
+
+  <div class="page-header">
+    <h1>User</h1>
+  </div>
+  <div class="col-lg-8">
+    @helper.form(action, 'class -> "form-horizontal") {
+      <fieldset>
+        @inputText(user("login"))
+          <div id="profile-inputs">
+            @helper.repeat(user("profiles"), min = 1) { profileField =>
+              @profile(profileField)
+            }
+          </div>
+          <div class="pull-right" style="margin:10px;">
+            <a class="btn btn-sm btn-primary add-profile" href="#">
+              <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+              Add Profile
+            </a>
+          </div>
+      </fieldset>
+      <div class="well">
+        <button class="btn btn-primary" type="submit">@buttonLabel</button>
+        <a href="@routes.Users.index" class="btn btn-default">Cancel</a>
+      </div>
+    }
+  </div>
+  <script type="text/javascript">
+    $(function() {
+      function renumber() {
+        $("#profile-inputs div.block").each(function(i) {
+          $(this).find(".title").text($(this).find(".title").text().replace(/Profiles\[.*?\]/g, "Profiles[" + i +"]"));
+          $(this).find("input").each(function() {
+            var input = $(this).removeAttr("id");
+            input.attr("name", input.attr("name").replace(/profiles\[.*?\]/g, "profiles[" + i +"]"));
+          });
+        });
+      };
+
+      $(document).on("click", ".add-profile", function() {
+        var elems = $("#profile-template").children().clone();
+        $("#profile-inputs").append(elems);
+        renumber();
+        return false;
+      }).on("click", "button.close", function() {
+        $(this).closest("div.block").remove();
+        renumber();
+        return false;
+      });
+    });
+  </script>
+}
